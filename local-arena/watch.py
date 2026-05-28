@@ -17,7 +17,7 @@ from kaggle_environments import make
 
 def run_and_capture(agent_a, agent_b):
     """Run a game and capture full step-by-step data for visualization."""
-    env = make("orbit_wars", debug=False)
+    env = make("orbit_wars", debug=True)
     result = env.run([agent_a, agent_b])
 
     # Extract configuration

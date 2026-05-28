@@ -1,10 +1,13 @@
-import math
 from kaggle_environments.envs.orbit_wars.orbit_wars import Planet
+from utils.geometry import fleet_speed
+from utils.solver import solve_intercept
+import math
 
 def agent(obs):
     moves = []
     player = obs.get("player", 0) if isinstance(obs, dict) else obs.player
     raw_planets = obs.get("planets", []) if isinstance(obs, dict) else obs.planets
+    omega = obs.get("angular_velocity", 0.0) if isinstance(obs, dict) else obs.angular_velocity
     planets = [Planet(*p) for p in raw_planets]
 
     my_planets = [p for p in planets if p.owner == player]
@@ -14,13 +17,17 @@ def agent(obs):
         return moves
 
     for mine in my_planets:
-        # Find nearest planet we don't own
+
         nearest = min(targets, key=lambda t: math.hypot(mine.x - t.x, mine.y - t.y))
 
-        # Send exactly enough ships to capture it
-        ships_needed = nearest.ships + 1
-        if mine.ships >= ships_needed:
-            angle = math.atan2(nearest.y - mine.y, nearest.x - mine.x)
-            moves.append([mine.id, angle, ships_needed])
+        ships_needed = int(nearest.ships) + 1
+        if mine.ships < ships_needed:
+            continue
+
+        sol = solve_intercept(mine, nearest, omega, fleet_speed(ships_needed))
+        if sol is None or sol["blocked"]:
+            continue
+
+        moves.append([mine.id, sol["angle"], ships_needed])
 
     return moves
