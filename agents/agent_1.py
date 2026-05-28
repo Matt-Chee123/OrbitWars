@@ -1,6 +1,6 @@
 from kaggle_environments.envs.orbit_wars.orbit_wars import Planet
-from utils.geometry import fleet_speed
-from utils.solver import solve_intercept
+from owHelpers.geometry import fleet_speed
+from owHelpers.solver import solve_intercept
 import math
 
 def agent(obs):
