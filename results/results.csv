@@ -1,0 +1,5 @@
+timestamp,run_id,seed,a_slot,label_a,hash_a,label_b,hash_b,winner,a_ships,b_ships,ship_margin,steps,elapsed,p0_status,p1_status,error,replay_path
+2026-05-28T20:34:09,20260528-203405,1000,0,agent_1,8c087fa7,agent_2,8c087fa7,A,1402,1402,0,500,3.77,DONE,DONE,,
+2026-05-28T20:34:12,20260528-203405,1000,1,agent_1,8c087fa7,agent_2,8c087fa7,B,1402,1402,0,500,3.77,DONE,DONE,,
+2026-05-28T20:34:14,20260528-203405,1001,0,agent_1,8c087fa7,agent_2,8c087fa7,A,558,558,0,500,1.88,DONE,DONE,,
+2026-05-28T20:34:16,20260528-203405,1001,1,agent_1,8c087fa7,agent_2,8c087fa7,B,558,558,0,500,2.01,DONE,DONE,,
