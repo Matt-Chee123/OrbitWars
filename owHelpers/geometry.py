@@ -43,3 +43,4 @@ def point_to_segment_distance(p, v, w):
 
 def path_crosses_sun(launch_xy, aim_xy):
     return point_to_segment_distance(CENTER, launch_xy, aim_xy) < SUN_RADIUS
+
