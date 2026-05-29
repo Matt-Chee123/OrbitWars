@@ -24,18 +24,16 @@ def _ship_count(fleet):
         return 1
 
 
-def assess_planet(planet, enemy_fleets, friendly_fleets, max_ticks=250):
-    omega = 0
-    print(planet)
+def assess_planet(planet, enemy_fleets, friendly_fleets, default_omega=0.0, max_ticks=250):
     prod = _get(planet, "production")
 
     incoming = []
     for f in enemy_fleets:
-        eta = fleet_to_planet_time(planet, f)
+        eta = fleet_to_planet_time(f, planet, default_omega)
         if eta is not None:
             incoming.append((eta, _ship_count(f), "enemy"))
     for f in friendly_fleets:
-        eta = fleet_to_planet_time(planet, f)
+        eta = fleet_to_planet_time(f, planet, default_omega)
         if eta is not None:
             incoming.append((eta, _ship_count(f), "friendly"))
     incoming.sort(key=lambda e: e[0])
@@ -54,6 +52,7 @@ def assess_planet(planet, enemy_fleets, friendly_fleets, max_ticks=250):
 
         if count > garrison:
             return {
+                "planet_id": _get(planet, "id"),
                 "planet": planet,
                 "eta": eta,
                 "attacking_ships": count,
@@ -72,7 +71,6 @@ def time_to_capture(fleet_pos, fleet_vel, planet, omega, capture_radius=None, ma
     pr = _get(planet, 'radius')
     cap_r = pr if capture_radius is None else capture_radius
     rotating = is_rotating(px0, py0, pr)
-
     def gap(t):
         fx = fleet_pos[0] + fleet_vel[0] * t
         fy = fleet_pos[1] + fleet_vel[1] * t
@@ -83,7 +81,7 @@ def time_to_capture(fleet_pos, fleet_vel, planet, omega, capture_radius=None, ma
         return math.hypot(fx - qx, fy - qy) - cap_r
 
     prev_t, prev = 0.0, gap(0.0)
-    if prev_t <= 0.0:
+    if prev <= 0.0:
         return 0.0
 
     t = scan
@@ -109,7 +107,7 @@ def fleet_kinematics(fleet):
     angle = _get(fleet, 'angle')
     if angle is not None:
         speed = fleet_speed(n)
-        return (math.cos(angle) * speed, math.sin(angle) * speed), n
+        return pos, (math.cos(angle) * speed, math.sin(angle) * speed), n
     return pos, (0.0, 0.0), n
 
 def _planet_omega(planet, default_omega):
@@ -120,8 +118,7 @@ def _planet_omega(planet, default_omega):
 def detect_threatened_planets(my_planets, enemy_fleets, friendly_fleets=(), horizon=None, default_omega=0.0):
     threats = []
     for p in my_planets:
-        t = assess_planet(p, enemy_fleets, friendly_fleets)
-        print("ttttttttttttt", t)
+        t = assess_planet(p, enemy_fleets, friendly_fleets, default_omega)
         if t and (horizon is None or _get(t, "eta") <= horizon):
             threats.append(t)
     threats.sort(key=lambda t: t['eta'])
